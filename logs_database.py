@@ -79,6 +79,6 @@ def days_with_errors():
     for row in results:
         print(str(row[0]) + ' ' + str(row[1] + '%')
 
-top_three_authors ()
+top_three_authors()
 top_three_articles()
 days_with_errors()
