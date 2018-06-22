@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-# 
 
 import psycopg2
 
 #Connects to the news database, runs the query, and returns the results
 def run_query(query):
-    db = psycopg2.connect('news')
+    db = psycopg2.connect(database='news')
     c = db.cursor()
     c.execute(query)
     rows = c.fetchall()
@@ -45,20 +43,18 @@ def top_three_authors():
     #fethces the query of most popular authors
     authors_query = """
         select authors.name, count(*) as num
-        from authors
-        join articles
-        on authors.id = articles.author
-        join log
-        on log.path
+        from articles, authors, log
+        where log.status='200 OK'
+        and authors.id = articles.author
+        and articles.slug = substr(log.path, 10)
         group by authors.name
-        order by num DESC
-        limit 3;
+        order by num desc;
     """
 
     results = run_query(authors_query)
 
     #Print Results
-    print('The three most popular authors:')
+    print('The most popular authors:')
     count = 1
     for row in results:
         print('(' + str(count) + ') ' + row[0] + ' with ' + str(row[1]) + " views")
@@ -67,17 +63,15 @@ def top_three_authors():
 
 #Prints the days with more than 1% errors
 def days_with_errors():
-
     #fetches the query of error days
-    errors_query = "Select time, count(*) as num from log where status != '200 ok' order by time limit 3"
+    errors_query = "Select time, status from log where status != '200 ok' order by time limit 3"
 
-   
     results = run_query(errors_query)
 
     #Print Results
-    print('days with more than 1% or requests that lead to errors')
+    print('Days with more than 1% or requests that lead to errors')
     for row in results:
-        print(str(row[0]) + ' ' + str(row[1] + '%')
+        print "str(row[0]) + ' ' + str(row[1] + '%'"
 
 top_three_authors()
 top_three_articles()
